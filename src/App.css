@@ -1,0 +1,51 @@
+.App {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-color);
+    background-color: var(--window-background-color);
+    overflow-y: auto;
+}
+
+.modal {
+    margin: 16px;
+    position: absolute;
+    max-width: 500px;
+    max-height: 90vh;
+    background-color: var(--surface-background-color);
+    border-radius: 16px;
+    overflow-y: auto;
+    z-index: 1;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--overlay-background-color);
+    opacity: 50%;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    background: transparent;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888888;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+}

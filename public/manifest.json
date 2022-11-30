@@ -1,0 +1,36 @@
+{
+  "short_name": "Pomodoro Timer",
+  "name": "Pomodoro Timer",
+  "description": "Pomodoro timer app that implements the Pomodoro technique",
+  "icons": [
+    {
+      "src": "icons8-timer-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "icons8-timer-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "icons8-timer-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "icons8-timer-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons8-timer-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#000000"
+}

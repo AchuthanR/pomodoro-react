@@ -1,0 +1,62 @@
+.Timer {
+    margin: 16px;
+    padding: 64px 32px 64px 32px;
+    box-sizing: border-box;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--surface-background-color);
+    border-radius: 32px;
+}
+
+.Timer__progress {
+    margin-top: 32px;
+    width: 50%;
+    height: 8px;
+}
+
+.Timer__ticks {
+    margin-top: 32px;
+    font-size: xx-large;
+    font-weight: bold;
+    letter-spacing: 8px;
+}
+
+.Timer__mode {
+    margin-top: 4px;
+    font-size: medium;
+    text-transform: uppercase;
+}
+
+.Timer__control-btn {
+    margin-top: 48px;
+    padding: 12px 24px 12px 24px;
+    font-size: medium;
+    text-transform: uppercase;
+    border-radius: 24px;
+    cursor: pointer;
+}
+
+.Timer__reset-btn {
+    margin-top: 8px;
+    padding: 8px 16px 8px 16px;
+    font-size: small;
+    border: none;
+    cursor: pointer;
+}
+
+.Timer__reset-btn:hover {
+    text-decoration: underline;
+}
+
+.Timer__skip-btn {
+    margin-top: 16px;
+    padding: 8px 16px 8px 16px;
+    align-self: flex-end;
+    font-size: small;
+    text-transform: uppercase;
+    border-radius: 20px;
+    cursor: pointer;
+}

@@ -1,0 +1,67 @@
+.Settings {
+    position: relative;
+    padding: 48px 56px 48px 56px;
+}
+
+.Settings__close-btn {
+    position: absolute;
+    top: 16px;
+    right: 12px;
+    padding: 8px;
+    border-radius: 100%;
+    cursor: pointer;
+}
+
+.Settings__range-setting {
+    margin-bottom: 16px;
+}
+
+.Settings__range-setting > label {
+    margin-bottom: 8px;
+    display: block;
+}
+
+.Settings__range-setting > div {
+    display: flex;
+    align-items: center;
+}
+
+.Settings__range-setting > div > input {
+    margin-right: 8px;
+    min-width: 70%;
+}
+
+.Settings__checkbox-setting {
+    margin-bottom: 16px;
+}
+
+.Settings__checkbox-setting > input {
+    margin-right: 16px;
+}
+
+.Settings__notifications-disabled-info {
+    margin-left: 34px;
+}
+
+.Settings__radio-group {
+    margin-bottom: 16px;
+}
+
+.Settings__radio-group > .Settings__radio-setting {
+    margin-top: 8px;
+}
+
+.Settings__radio-setting > input {
+    margin-left: 4px;
+    margin-right: 16px;
+}
+
+.Settings__save-btn {
+    margin-top: 8px;
+    margin-left: auto;
+    padding: 12px 24px 12px 24px;
+    display: block;
+    font-size: small;
+    border-radius: 24px;
+    cursor: pointer;
+}
