@@ -9,25 +9,39 @@
     overflow-y: auto;
 }
 
-.modal {
+main {
     margin: 16px;
-    position: absolute;
-    max-width: 500px;
-    max-height: 90vh;
+    padding: 64px 32px 64px 32px;
+    box-sizing: border-box;
+    max-width: 400px;
     background-color: var(--surface-background-color);
-    border-radius: 16px;
-    overflow-y: auto;
-    z-index: 1;
+    border-radius: 32px;
 }
 
-.overlay {
+#modal {
+    padding: 16px;
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: var(--overlay-background-color);
-    opacity: 50%;
+    z-index: 10;
+}
+
+#modal:empty {
+    display: none;
+}
+
+#modal > div {
+    max-width: 500px;
+    max-height: 90vh;
+    background-color: var(--surface-background-color);
+    border-radius: 16px;
+    overflow-y: hidden;
 }
 
 ::-webkit-scrollbar {

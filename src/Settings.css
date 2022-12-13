@@ -1,6 +1,8 @@
 .Settings {
     position: relative;
-    padding: 48px 56px 48px 56px;
+    padding-top: 56px;
+    box-sizing: border-box;
+    max-height: 90vh;
 }
 
 .Settings__close-btn {
@@ -10,6 +12,24 @@
     padding: 8px;
     border-radius: 100%;
     cursor: pointer;
+}
+
+a {
+    color: var(--text-color);
+}
+
+.Settings__header {
+    margin-top: 0px;
+    margin-bottom: 16px;
+    margin-left: 48px;
+}
+
+.Settings__content {
+    padding-bottom: 16px;
+    padding-left: 48px;
+    padding-right: 48px;
+    max-height: 60vh;
+    overflow-y: auto;
 }
 
 .Settings__range-setting {

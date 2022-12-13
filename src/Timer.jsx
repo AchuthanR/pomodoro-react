@@ -1,13 +1,12 @@
 import "./Timer.css";
 import React from "react";
-import Navbar from "./Navbar";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
 class Timer extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { mode: "focus", status: "unbegun", currentRound: 1 }
+        this.state = { mode: "focus", status: "unbegun", currentRound: 1 };
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -64,10 +63,20 @@ class Timer extends React.Component {
             }
             if (isProgrammatic && this.props.settings.shouldBreakAutoStart) {
                 this.startTimer();
-                this.setState({ ticks: 0, totalTicks: totalTicks, mode: mode, status: "running" });
+                this.setState({
+                    ticks: 0,
+                    totalTicks: totalTicks,
+                    mode: mode,
+                    status: "running",
+                });
             }
             else {
-                this.setState({ ticks: 0, totalTicks: totalTicks, mode: mode, status: "unbegun" });
+                this.setState({
+                    ticks: 0,
+                    totalTicks: totalTicks,
+                    mode: mode,
+                    status: "unbegun",
+                });
             }
 
             this.notification?.close();
@@ -81,13 +90,25 @@ class Timer extends React.Component {
             }
         }
         else {
-            let nextRound = (this.state.currentRound) % (this.props.settings.noRoundsTillLongBreak) + 1;
+            let nextRound = (this.state.currentRound % this.props.settings.noRoundsTillLongBreak) + 1;
             if (isProgrammatic && this.props.settings.shouldFocusAutoStart) {
                 this.startTimer();
-                this.setState({ ticks: 0, totalTicks: this.props.settings.focusTimeLength * 60, mode: "focus", status: "running", currentRound: nextRound });
+                this.setState({
+                    ticks: 0,
+                    totalTicks: this.props.settings.focusTimeLength * 60,
+                    mode: "focus",
+                    status: "running",
+                    currentRound: nextRound,
+                });
             }
             else {
-                this.setState({ ticks: 0, totalTicks: this.props.settings.focusTimeLength * 60, mode: "focus", status: "unbegun", currentRound: nextRound });
+                this.setState({
+                    ticks: 0,
+                    totalTicks: this.props.settings.focusTimeLength * 60,
+                    mode: "focus",
+                    status: "unbegun",
+                    currentRound: nextRound,
+                });
             }
 
             this.notification?.close();
@@ -115,7 +136,7 @@ class Timer extends React.Component {
         let statusIcon;
         let progressValue;
 
-        ticksString = (Math.floor((this.state.totalTicks - this.state.ticks) / 60)).toLocaleString(undefined, { minimumIntegerDigits: 2 }) + ":"
+        ticksString = Math.floor((this.state.totalTicks - this.state.ticks) / 60).toLocaleString(undefined, { minimumIntegerDigits: 2 }) + ":"
             + ((this.state.totalTicks - this.state.ticks) % 60).toLocaleString(undefined, { minimumIntegerDigits: 2 });
 
         if (this.state.mode === "focus") {
@@ -145,9 +166,7 @@ class Timer extends React.Component {
         }
 
         return (
-            <main className="Timer">
-                <Navbar openSettingsOnClick={this.props.openSettingsOnClick}
-                    closeSettingsOnClick={this.props.closeSettingsOnClick} />
+            <div className="Timer">
                 {this.state.status === "unbegun"
                     ? (<progress className="Timer__progress" value={Math.floor(progressValue)} max="100" style={{ visibility: "hidden" }}></progress>)
                     : (<progress className="Timer__progress" value={Math.floor(progressValue)} max="100"></progress>)}
@@ -159,11 +178,11 @@ class Timer extends React.Component {
                 </button>
                 <button type="button" className="Timer__reset-btn text-btn" onClick={this.resetTimerState}>Reset</button>
                 <button type="button" className="Timer__skip-btn secondary-btn" onClick={this.switchTimerMode}>
-                    <FontAwesomeIcon icon={solid('forward-step')} style={{ marginRight: "8px" }} />
+                    <FontAwesomeIcon icon={solid("forward-step")} style={{ marginRight: "8px" }} />
                     Skip
                 </button>
-            </main>
-        )
+            </div>
+        );
     }
 }
 
