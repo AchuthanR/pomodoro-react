@@ -5,7 +5,7 @@ import Settings from "./Settings";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
-function Navbar(props) {
+function Navbar() {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     function toggleModal() {
@@ -20,7 +20,7 @@ function Navbar(props) {
             </button>
             {isModalVisible ?
                 <Modal>
-                    <Settings closeModal={toggleModal} settings={props.settings} settingsHandleChange={props.settingsHandleChange} />
+                    <Settings closeModal={toggleModal} />
                 </Modal>
                 : null}
         </div>

@@ -1,189 +1,171 @@
 import "./Timer.css";
-import React from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
+import { SettingsContext } from "./SettingsContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 
-class Timer extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { mode: "focus", status: "unbegun", currentRound: 1 };
-    }
+function Timer() {
+    const [settings] = useContext(SettingsContext);
+    const [mode, setMode] = useState("focus");
+    const [status, setStatus] = useState("unbegun");
+    const [currentRound, setCurrentRound] = useState(1);
+    const [ticks, setTicks] = useState(0);
+    const [totalTicks, setTotalTicks] = useState(settings.focusTimeLength * 60);
 
-    static getDerivedStateFromProps(props, state) {
-        if (state.status === "unbegun" && state.mode === "focus") {
-            return { ticks: 0, totalTicks: props.settings.focusTimeLength * 60 };
-        }
-        else if (state.status === "unbegun" && state.mode === "shortBreak") {
-            return { ticks: 0, totalTicks: props.settings.shortBreakTimeLength * 60 };
-        }
-        else if (state.status === "unbegun" && state.mode === "longBreak") {
-            return { ticks: 0, totalTicks: props.settings.longBreakTimeLength * 60 };
-        }
-        else {
-            return {};
-        }
-    }
+    let notificationRef = useRef();
 
-    startTimer = () => {
-        this.intervalID = setInterval(() => {
-            if (this.state.ticks >= this.state.totalTicks) {
-                this.switchTimerMode(null, true);
-                return;
-            }
-            this.setState({ ticks: this.state.ticks + 1 });
+    useEffect(() => {
+        if (ticks >= totalTicks) {
+            switchTimerMode(null, true);
+        }
+    }, [ticks]);
+
+    useEffect(() => {
+        if (status !== "running") {
+            return;
+        }
+
+        let intervalID = setInterval(function () {
+            setTicks(ticks => ticks + 1);
         }, 1000);
-    };
 
-    stopTimer = () => {
-        clearInterval(this.intervalID);
-    };
+        return () => clearInterval(intervalID);
+    }, [status]);
 
-    switchTimerStatus = () => {
-        if (this.state.status === "running") {
-            this.stopTimer();
-            this.setState({ status: "paused" });
+    useEffect(() => {
+        if (status === "unbegun" && mode === "focus") {
+            setTotalTicks(settings.focusTimeLength * 60);
+        }
+        else if (status === "unbegun" && mode === "shortBreak") {
+            setTotalTicks(settings.shortBreakTimeLength * 60);
+        }
+        else if (status === "unbegun" && mode === "longBreak") {
+            setTotalTicks(settings.longBreakTimeLength * 60);
+        }
+    }, [status, settings.focusTimeLength, settings.shortBreakTimeLength, settings.longBreakTimeLength]);
+
+    function switchTimerStatus() {
+        if (status === "running") {
+            setStatus("paused");
         }
         else {
-            this.startTimer();
-            this.setState({ status: "running" });
+            setStatus("running");
         }
     };
 
-    switchTimerMode = (e, isProgrammatic = false) => {
-        this.stopTimer();
-        if (this.state.mode === "focus") {
-            let totalTicks, mode;
-            if (this.state.currentRound === this.props.settings.noRoundsTillLongBreak) {
-                totalTicks = this.props.settings.longBreakTimeLength * 60;
-                mode = "longBreak";
+    function switchTimerMode(e, isProgrammatic = false) {
+        if (mode === "focus") {
+            let newTotalTicks, newMode;
+            if (currentRound === settings.noRoundsTillLongBreak) {
+                newTotalTicks = settings.longBreakTimeLength * 60;
+                newMode = "longBreak";
             }
             else {
-                totalTicks = this.props.settings.shortBreakTimeLength * 60;
-                mode = "shortBreak";
+                newTotalTicks = settings.shortBreakTimeLength * 60;
+                newMode = "shortBreak";
             }
-            if (isProgrammatic && this.props.settings.shouldBreakAutoStart) {
-                this.startTimer();
-                this.setState({
-                    ticks: 0,
-                    totalTicks: totalTicks,
-                    mode: mode,
-                    status: "running",
-                });
+            if (isProgrammatic && settings.shouldBreakAutoStart) {
+                setStatus("running");
             }
             else {
-                this.setState({
-                    ticks: 0,
-                    totalTicks: totalTicks,
-                    mode: mode,
-                    status: "unbegun",
-                });
+                setStatus("unbegun");
             }
+            setTicks(0);
+            setTotalTicks(newTotalTicks);
+            setMode(newMode);
 
-            this.notification?.close();
-            if (isProgrammatic && this.props.settings.shouldShowFocusNotification && Notification.permission === "granted") {
-                if (mode === "shortBreak") {
-                    this.notification = new Notification("Focus session ended! Time for a short break...");
+            notificationRef.current?.close();
+            if (isProgrammatic && settings.shouldShowFocusNotification && Notification.permission === "granted") {
+                if (newMode === "shortBreak") {
+                    notificationRef.current = new Notification("Focus session ended! Time for a short break...");
                 }
                 else {
-                    this.notification = new Notification("Focus session ended! Time for a long break...");
+                    notificationRef.current = new Notification("Focus session ended! Time for a long break...");
                 }
             }
         }
         else {
-            let nextRound = (this.state.currentRound % this.props.settings.noRoundsTillLongBreak) + 1;
-            if (isProgrammatic && this.props.settings.shouldFocusAutoStart) {
-                this.startTimer();
-                this.setState({
-                    ticks: 0,
-                    totalTicks: this.props.settings.focusTimeLength * 60,
-                    mode: "focus",
-                    status: "running",
-                    currentRound: nextRound,
-                });
+            let nextRound = (currentRound % settings.noRoundsTillLongBreak) + 1;
+            if (isProgrammatic && settings.shouldFocusAutoStart) {
+                setStatus("running");
             }
             else {
-                this.setState({
-                    ticks: 0,
-                    totalTicks: this.props.settings.focusTimeLength * 60,
-                    mode: "focus",
-                    status: "unbegun",
-                    currentRound: nextRound,
-                });
+                setStatus("unbegun");
             }
+            setTicks(0);
+            setTotalTicks(settings.focusTimeLength * 60);
+            setMode("focus");
+            setCurrentRound(nextRound);
 
-            this.notification?.close();
-            if (isProgrammatic && this.props.settings.shouldShowBreakNotification && Notification.permission === "granted") {
-                this.notification = new Notification("Break ended! Time to focus...");
+            notificationRef.current?.close();
+            if (isProgrammatic && settings.shouldShowBreakNotification && Notification.permission === "granted") {
+                notificationRef.current = new Notification("Break ended! Time to focus...");
             }
         }
     };
 
-    resetTimerState = () => {
-        this.stopTimer();
-        if (this.state.mode === "focus") {
-            this.setState({ ticks: 0, status: "unbegun" });
-        }
-        else if (this.state.mode === "shortBreak") {
-            this.setState({ ticks: 0, status: "unbegun" });
-        }
-        else {
-            this.setState({ ticks: 0, status: "unbegun" });
-        }
+    function resetTimerState() {
+        setTicks(0);
+        setStatus("unbegun");
     };
 
-    render() {
-        let ticksString, modeString, statusString;
-        let statusIcon;
-        let progressValue;
 
-        ticksString = Math.floor((this.state.totalTicks - this.state.ticks) / 60).toLocaleString(undefined, { minimumIntegerDigits: 2 }) + ":"
-            + ((this.state.totalTicks - this.state.ticks) % 60).toLocaleString(undefined, { minimumIntegerDigits: 2 });
 
-        if (this.state.mode === "focus") {
-            modeString = "Focus";
-            progressValue = (this.state.ticks / this.state.totalTicks) * 100;
-        }
-        else if (this.state.mode === "shortBreak") {
-            modeString = "Short break";
-            progressValue = (this.state.ticks / this.state.totalTicks) * 100;
-        }
-        else {
-            modeString = "Long break";
-            progressValue = (this.state.ticks / this.state.totalTicks) * 100;
-        }
+    let ticksString, modeString, statusString;
+    let statusIcon;
+    let progressValue;
 
-        if (this.state.status === "unbegun") {
-            statusString = "Start";
-            statusIcon = <FontAwesomeIcon icon={solid("play")} style={{ marginRight: "8px" }} />;
-        }
-        else if (this.state.status === "running") {
-            statusString = "Pause";
-            statusIcon = <FontAwesomeIcon icon={solid("pause")} style={{ marginRight: "8px" }} />;
-        }
-        else {
-            statusString = "Continue";
-            statusIcon = <FontAwesomeIcon icon={solid("play")} style={{ marginRight: "8px" }} />;
-        }
+    let hours = Math.floor((totalTicks - ticks) / 60 / 60);
+    ticksString = (hours >= 1) ? (hours + ":") : "";
+    let minutes = Math.floor((totalTicks - ticks) / 60) - hours * 60;
+    ticksString += minutes.toLocaleString(undefined, { minimumIntegerDigits: 2 }) + ":";
+    let seconds = (totalTicks - ticks) % 60;
+    ticksString += seconds.toLocaleString(undefined, { minimumIntegerDigits: 2 });
 
-        return (
-            <div className="Timer">
-                {this.state.status === "unbegun"
-                    ? (<progress className="Timer__progress" value={Math.floor(progressValue)} max="100" style={{ visibility: "hidden" }}></progress>)
-                    : (<progress className="Timer__progress" value={Math.floor(progressValue)} max="100"></progress>)}
-                <span className="Timer__ticks">{ticksString}</span>
-                <span className="Timer__mode caption-text">{modeString}</span>
-                <span className="caption-text">{this.state.currentRound}/{this.props.settings.noRoundsTillLongBreak}</span>
-                <button type="button" className="Timer__control-btn primary-btn" onClick={this.switchTimerStatus}>
-                    {statusIcon}{statusString}
-                </button>
-                <button type="button" className="Timer__reset-btn text-btn" onClick={this.resetTimerState}>Reset</button>
-                <button type="button" className="Timer__skip-btn secondary-btn" onClick={this.switchTimerMode}>
-                    <FontAwesomeIcon icon={solid("forward-step")} style={{ marginRight: "8px" }} />
-                    Skip
-                </button>
-            </div>
-        );
+    if (mode === "focus") {
+        modeString = "Focus";
+        progressValue = Math.floor((ticks / totalTicks) * 100);
     }
+    else if (mode === "shortBreak") {
+        modeString = "Short break";
+        progressValue = Math.floor((ticks / totalTicks) * 100);
+    }
+    else {
+        modeString = "Long break";
+        progressValue = Math.floor((ticks / totalTicks) * 100);
+    }
+
+    if (status === "unbegun") {
+        statusString = "Start";
+        statusIcon = <FontAwesomeIcon icon={solid("play")} style={{ marginRight: "8px" }} />;
+    }
+    else if (status === "running") {
+        statusString = "Pause";
+        statusIcon = <FontAwesomeIcon icon={solid("pause")} style={{ marginRight: "8px" }} />;
+    }
+    else {
+        statusString = "Continue";
+        statusIcon = <FontAwesomeIcon icon={solid("play")} style={{ marginRight: "8px" }} />;
+    }
+
+    return (
+        <div className="Timer">
+            {status === "unbegun"
+                ? (<progress className="Timer__progress" value={progressValue} max="100" style={{ visibility: "hidden" }}></progress>)
+                : (<progress className="Timer__progress" value={progressValue} max="100"></progress>)}
+            <span className="Timer__ticks">{ticksString}</span>
+            <span className="Timer__mode caption-text">{modeString}</span>
+            <span className="caption-text">{currentRound}/{settings.noRoundsTillLongBreak}</span>
+            <button type="button" className="Timer__control-btn primary-btn" onClick={switchTimerStatus}>
+                {statusIcon}{statusString}
+            </button>
+            <button type="button" className="Timer__reset-btn text-btn" onClick={resetTimerState}>Reset</button>
+            <button type="button" className="Timer__skip-btn secondary-btn" onClick={switchTimerMode}>
+                <FontAwesomeIcon icon={solid("forward-step")} style={{ marginRight: "8px" }} />
+                Skip
+            </button>
+        </div>
+    );
 }
 
 export default Timer;
