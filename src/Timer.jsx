@@ -1,5 +1,5 @@
 import "./Timer.css";
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { SettingsContext } from "./SettingsContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro";
@@ -11,8 +11,6 @@ function Timer() {
     const [currentRound, setCurrentRound] = useState(1);
     const [ticks, setTicks] = useState(0);
     const [totalTicks, setTotalTicks] = useState(settings.focusTimeLength * 60);
-
-    let notificationRef = useRef();
 
     useEffect(() => {
         if (ticks >= totalTicks) {
@@ -74,13 +72,29 @@ function Timer() {
             setTotalTicks(newTotalTicks);
             setMode(newMode);
 
-            notificationRef.current?.close();
+            navigator.serviceWorker.ready.then((registration) => {
+                registration.getNotifications({ tag: "break-end-notification" }).then((notifications) => {
+                    notifications.forEach(notification => notification.close());
+                })
+            });
             if (isProgrammatic && settings.shouldShowFocusNotification && Notification.permission === "granted") {
                 if (newMode === "shortBreak") {
-                    notificationRef.current = new Notification("Focus session ended! Time for a short break...");
+                    navigator.serviceWorker.ready.then((registration) => {
+                        registration.showNotification("Focus session ended", {
+                            body: "Time for a short break...",
+                            icon: "./icons8-timer-192.png",
+                            tag: "focus-end-notification",
+                        });
+                    });
                 }
                 else {
-                    notificationRef.current = new Notification("Focus session ended! Time for a long break...");
+                    navigator.serviceWorker.ready.then((registration) => {
+                        registration.showNotification("Focus session ended", {
+                            body: "Time for a long break...",
+                            icon: "./icons8-timer-192.png",
+                            tag: "focus-end-notification",
+                        });
+                    });
                 }
             }
         }
@@ -97,9 +111,19 @@ function Timer() {
             setMode("focus");
             setCurrentRound(nextRound);
 
-            notificationRef.current?.close();
+            navigator.serviceWorker.ready.then((registration) => {
+                registration.getNotifications({ tag: "focus-end-notification" }).then((notifications) => {
+                    notifications.forEach(notification => notification.close());
+                })
+            });
             if (isProgrammatic && settings.shouldShowBreakNotification && Notification.permission === "granted") {
-                notificationRef.current = new Notification("Break ended! Time to focus...");
+                navigator.serviceWorker.ready.then((registration) => {
+                    registration.showNotification("Break ended", {
+                        body: "Time to focus...",
+                        icon: "./icons8-timer-192.png",
+                        tag: "break-end-notification",
+                    });
+                });
             }
         }
     };
