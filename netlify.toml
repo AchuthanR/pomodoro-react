@@ -1,0 +1,20 @@
+[[headers]]
+  for = "/static/media/:placeholders"
+  [headers.values]
+	cache-control = '''
+	max-age=2592000,
+	must-revalidate'''
+
+[[headers]]
+  for = "/static/css/:placeholders"
+  [headers.values]
+	cache-control = '''
+	max-age=2592000,
+	must-revalidate'''
+
+[[headers]]
+  for = "/static/js/:placeholders"
+  [headers.values]
+	cache-control = '''
+	max-age=2592000,
+	must-revalidate'''
